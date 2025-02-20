@@ -37,7 +37,6 @@
                         <label class="col-sm-2 col-form-label" for="phone">Số điện thoại</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="users.phone" id="phone" placeholder="012345678" />
-                            <small class="text-danger text-start-center" v-if="errors.phone">{{ errors.phone[0] }}</small>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -91,7 +90,7 @@
 <script>
 import {
     defineComponent,
-    ref
+    ref,watch
 } from "vue";
 import {
     useToast
@@ -175,6 +174,13 @@ export default defineComponent({
                     console.error(error);
                 });
         }
+        watch(() => users.value.email, (newEmail) => {
+            if (newEmail) {
+                users.value.username = newEmail.split('@')[0];
+            } else {
+                users.value.username = "";
+            }
+        });
         getUsersCreate();
         getRole();
         return {

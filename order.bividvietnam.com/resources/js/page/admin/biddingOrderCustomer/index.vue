@@ -661,7 +661,7 @@ export default {
         };
         const formatNumber = (value) => {
             if (value !== undefined && value !== null) {
-                return value.toLocaleString();
+                return new Intl.NumberFormat('vi-VN').format(value);
             } else {
                 return '';
             }
@@ -711,7 +711,7 @@ export default {
                     doanhthu_theonhanvien.value = response.data.doanhthu_theonhanvien;
                     doanhthu_theokhachang.value = response.data.doanhthu_theokhachang;
                     doanhthu_theosanpham.value = response.data.doanhthu_theosanpham;
-                    
+
                     drawChart();
                 })
                 .catch((error) => {

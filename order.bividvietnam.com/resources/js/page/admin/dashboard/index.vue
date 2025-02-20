@@ -68,15 +68,15 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <h6 class="card-title m-6">Tổng tiền</h6>
-                    <p class="m-6"><u>{{ (order.totalMoneySum).toLocaleString() }}</u></p>
+                    <p class="m-6"><u>{{ (order.totalMoneySum) }}</u></p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h6 class="card-title m-6">Đơn bán</h6>
-                    <p class="m-6"><u>{{ (order.totalOrder).toLocaleString() }}</u></p>
+                    <p class="m-6"><u>{{ (order.totalOrder) }}</u></p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h6 class="card-title m-6">Số lượng</h6>
-                    <p class="m-6"><u>{{ Math.floor(order.totalQuantity).toLocaleString() }}</u></p>
+                    <p class="m-6"><u>{{ Math.floor(order.totalQuantity) }}</u></p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <h6 class="card-title m-6">Tiền trả hàng</h6>
@@ -196,7 +196,7 @@ export default defineComponent({
         };
         const formatNumber = (value) => {
             if (value !== undefined && value !== null) {
-                return value.toLocaleString();
+                return new Intl.NumberFormat('vi-VN').format(value);
             } else {
                 return '';
             }

@@ -13,12 +13,13 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
 
     public function login(Request $request)
-    {   
+    {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -27,12 +28,18 @@ class AuthController extends Controller
             'email.email' => 'Hãy nhập đúng định dạng email',
             'password.required' => 'Hãy nhập mật khẩu',
         ]);
-        $credentials = request(['email', 'password']);
+
+        $credentials = $request->only('email', 'password');
         if (!$token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        $user = auth()->user();
+        if ($user->lock_status !== 0) {
+            return response()->json(['error' => 'Tài khoản bị khóa'], 401);
+        }
         return $this->respondWithToken($token);
     }
+
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -63,10 +70,12 @@ class AuthController extends Controller
     public function userProfile()
     {
         $user = Auth::user();
-        if ( $user->company_select === null) {
-            $companyIds = json_decode($user->company_id, true);
-            $companySelect = $companyIds[0];
-            $user->company_select = $companySelect;
+        if ($user) {
+            $user->logined = Carbon::now();
+            if ($user->company_select === null) {
+                $companyIds = json_decode($user->company_id, true);
+                $user->company_select = $companyIds[0];
+            }
             $user->save();
         }
         return response()->json(Auth::user());
@@ -93,7 +102,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Mật khẩu hiện tại không đúng'], 400);
         }
         $user->password = Hash::make($request->input('new_password'));
-        $user->check_login = 1;
         $user->save();
 
         return response()->json(['message' => 'Mật khẩu đã được cập nhật thành công']);
@@ -114,7 +122,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Không tìm thấy người dùng đã xác thực'], 404);
         }
     }
-    
+
     public function putCompany(Request $request){
         $user = Auth::user();
         if ($user) {

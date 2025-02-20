@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderShipped;
 use App\Models\User;
-
+use App\Models\orderLogModel;
 class SopController extends Controller
 {
     /**
@@ -42,21 +42,18 @@ class SopController extends Controller
         if ($user->roles()->where('name', 'Admin')->exists()) {
             $customers = Customer::where('company_id', $user->company_select)->get();
         } else {
-            $assignedUsers = [];
-            $this->getUsersAssignedToUser($user->id, $assignedUsers);
-            $assignedUserIds = array_unique(array_merge([$user->id], array_column($assignedUsers, 'id')));
+            $assignedUsers = $this->getUsersAssignedToUser($user->id);
+            $assignedUsers[] = $user->id;
             $customers = Customer::where('company_id', $user->company_select)
-                ->whereIn('user_assigned', $assignedUserIds)
+                ->whereIn('user_assigned', $assignedUsers)
                 ->get();
         }
-        $productsList = $products->where('prd_status', '1')->where('deleted', '0')->where('company_id', $user->company_select)->get();
-        $customer_bids = CustomersBids::all();
+        $productsList = $products->where('company_id', $user->company_select)->paginate(12);
         $product_unit = ProductsUnit::all();
         $data = [
             'customer' => $customers,
             'products' => $productsList,
             'product_unit' => $product_unit,
-            'customer_bids' => $customer_bids,
         ];
         return response()->json($data);
     }
@@ -64,28 +61,13 @@ class SopController extends Controller
     {
         $users = User::where('user_assigned', 'LIKE', "%$id%")->get();
         foreach ($users as $user) {
-            $assignedUsers[] = $user;
-            $this->getUsersAssignedToUser($user->id, $assignedUsers);
+            if (!in_array($user->id, $assignedUsers)) {
+                $assignedUsers[] = $user->id;
+                $this->getUsersAssignedToUser($user->id, $assignedUsers);
+            }
+            
         }
         return $assignedUsers;
-    }
-    public function getList(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $today = date('Y-m-d');
-        $customer_id = $request->input('customer_id');
-        $customer_bids_products = Customers_Bids_Products::where('deleted', '0')
-            ->where('customer_id', $customer_id)
-            ->where('quantity', '>', 0)
-            ->where('expiration_date', '>=', $today);
-        if ($keyword) {
-            $customer_bids_products->where('prd_code', 'LIKE', "%$keyword%");
-        }
-        $customer_bids_products = $customer_bids_products->get();
-        $data = [
-            'customer_bids_products' => $customer_bids_products,
-        ];
-        return response()->json($data);
     }
 
     /**
@@ -149,7 +131,6 @@ class SopController extends Controller
             $userOrder = User::find($user_id);
             if ($customer) {
                 $customer_email = 'doan.diepkhanh@bjvietduc.com';
-                // $customer_email = $customer['customer_email'];
                 $order->customer_email = $customer_email;
                 Mail::to($customer_email)->send(new OrderShipped($order, $customer, $products, $userOrder, $orderDetail));
             } else {

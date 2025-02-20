@@ -13,6 +13,7 @@ use App\Models\Customers_Bids_Products;
 use App\Models\Debts;
 use App\Models\ImportCustomerDebt;
 use App\Models\ImportWinningProduct;
+use App\Models\devImportModel;
 class ImportController extends Controller
 {
     public function customersFilter (Request $request){
@@ -35,6 +36,40 @@ class ImportController extends Controller
         }
         return response()->json(['message' => 'Import thành công']);
     }
+    public function importDateCustomer(Request $request){
+        $dateCustomer = $request->input('date');
+        $dateProduct = $request->input('dateProduct');
+        $devImport = DevImportModel::find(1);
+        if (!$devImport) {
+            return response()->json(['message' => 'Record not found'], 404);
+        }
+        $updateData = [];
+        $company_id = Auth::user()->company_select;
+        if ($company_id == '1') {
+            $updateData['date_Customer_Bileje'] = $dateCustomer;
+        }if ($company_id == '2') {
+            $updateData['date_Customer'] = $dateCustomer;
+        } else {
+            $updateData['date_Customer_Dbl'] = $dateCustomer;
+        }     
+        if ($dateCustomer !== null) {
+            $updateData['date_Customer'] = $dateCustomer;
+        }
+        if ($dateProduct !== null) {
+            $updateData['date_Product'] = $dateProduct;
+        }
+        if (!empty($updateData)) {
+            $devImport->update($updateData);
+        }
+        return response()->json(['message' => 'Update successful']);
+    }
+
+    public function getDateCustomer()
+        {
+            $devImport = DevImportModel::all();
+            return response()->json($devImport);
+        }
+
     public function productsFilter (Request $request){
         $productNames = $request->all();
         $existingProduct = Product::whereIn('prd_code', $productNames)->get();
@@ -42,33 +77,30 @@ class ImportController extends Controller
         return response()->json($remainingProductNames);
     }
 
-
-    
     public function productImport(Request $request) {
         $user = Auth::user()->id;
         $company_id = Auth::user()->company_select;
         $products = $request->all();
-        
-        foreach ($products as $productData) {    
+
+        foreach ($products as $productData) {
             $existingProduct = ImportProduct::where('prd_name', $productData['prd_name'])->first();
-            
+
             if (is_null($existingProduct)) {
                 $productData['company_id'] = $company_id;
                 $productData['user_id'] = $user;
                 ImportProduct::create($productData);
             }
         }
-        
         return response()->json(['message' => 'Import thành công']);
     }
     public function productWinningFilter(Request $request)
     {
-        $productNames = $request->all(); 
+        $productNames = $request->all();
         $productQuery = Customers_Bids_Products::query();
         if (!is_array($productNames)) {
             return response()->json(['error' => 'Invalid input'], 400);
         }
-        foreach ($productNames as $condition) {    
+        foreach ($productNames as $condition) {
             $productQuery->orwhere('customer_code', $condition['customer_id']);
             $productQuery->orWhere('prd_code', $condition['prd_code']);
         }
@@ -84,7 +116,7 @@ class ImportController extends Controller
             }
             return true;
         });
-        return response()->json(array_values($remainingProductNames)); 
+        return response()->json(array_values($remainingProductNames));
     }
     public function productWinningImport (Request $request){
         $user = Auth::user()->id;
@@ -119,7 +151,7 @@ class ImportController extends Controller
         $product = Customers_Bids_Products::create($requestData);
         return response()->json(['message' => 'Sản phẩm đã tạo thành công'], 201);
     }
-    
+
     public function debtsUser (Request $request){
         $user = Auth::user()->id;
         $product = $request->all();

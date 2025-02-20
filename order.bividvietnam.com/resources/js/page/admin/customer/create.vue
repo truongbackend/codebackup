@@ -28,27 +28,23 @@
                         <label class="col-sm-2 col-form-label" for="customer_phone">Số điện thoại</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="customer.customer_phone" id="customer_phone" placeholder="012345678" />
-                            <small class="text-danger text-start-center" v-if="errors.customer_phone">{{ errors.customer_phone[0] }}</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="customer_email">Email</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="customer.customer_email" id="customer_email" placeholder="Nhập email khách hàng ( ví dụ: abc@gmail.com )" />
-                            <small class="text-danger text-start-center" v-if="errors.customer_email">{{ errors.customer_email[0] }}</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="customer_addr">Địa chỉ</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" v-model="customer.customer_addr" id="customer_addr" />
-                            <small class="text-danger text-start-center" v-if="errors.customer_addr">{{ errors.customer_phone[0] }}</small>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label" for="customer_ship_addr">Địa chỉ nhận hàng</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" v-model="customer.customer_ship_addr" id="customer_ship_addr" />
                         </div>
                     </div>
                     <div class="row mb-3">

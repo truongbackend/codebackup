@@ -10,11 +10,18 @@
     </div>
 </div>
 <div class="card">
-    <div class="card-header d-flex align-items-center justify-content-between">
+    <div class="card-header">
         <div class="input-group input-group-merge">
             <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-            <input class="form-control" id="html5-search-input" v-model="searchKeyword" @input="searchProducts" type="text" placeholder="Nhập thông tin tìm kiếm...">
+            <input class="form-control" id="html5-search-input" v-model="searchKeyword" type="text" placeholder="Nhập thông tin tìm kiếm...">
         </div>
+        <div class="row mt-3">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-danger" @click="searchProducts">
+                        <i class='bx bx-search-alt'></i> Xem kết quả
+                    </button>
+                </div>
+            </div>
     </div>
     <div class="card-body">
         <div class="table-responsive text-nowrap">
@@ -190,7 +197,6 @@ export default defineComponent({
             clearTimeout(searchTimer.value);
             searchTimer.value = setTimeout(() => {
                 currentPage.value = 1;
-                getCustomers();
             }, 300);
         };
         const deleteConfirmed = () => {
@@ -239,7 +245,6 @@ export default defineComponent({
         }
         watch(searchKeyword, performSearch);
         getCustomers();
-
         return {
             customers,
             searchKeyword,
@@ -255,6 +260,7 @@ export default defineComponent({
             totalPages,
             confirmDelete,
             deleteConfirmed,
+            searchProducts:getCustomers,
         };
     },
 });

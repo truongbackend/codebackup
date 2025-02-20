@@ -81,8 +81,12 @@ import {
     watchEffect,
     computed
 } from 'vue';
-import { useToast } from "vue-toast-notification";
-import { useRouter } from "vue-router";
+import {
+    useToast
+} from "vue-toast-notification";
+import {
+    useRouter
+} from "vue-router";
 import {
     inject
 } from 'vue';
@@ -110,6 +114,7 @@ export default {
         const isLoading = ref(false);
         const company_select = ref("");
         const customerReturn = ref([]);
+        const dateCustomer = ref([]);
         const selectedCustomers = ref([]);
         const fetchUserData = async () => {
             try {
@@ -136,19 +141,41 @@ export default {
             },
         };
         const getImportCustomer = () => {
-            isLoading.value = true;
             axios
-                .get(`${baseApi}/sync/khach-hang?ma_cty=${company_select.value}`, axiosConfig)
-                .then((response) => {
-                    isLoading.value = false;
-                    customer.value = response.data;
-                    postCustomer();
+                .get(`${baseUrl}/api/getDateCustomer`)
+                .then(response => {
+                    dateCustomer.value = response.data[0];
+                    let TuNgay; 
+
+                    if (company_select.value == '001') {
+                        TuNgay = dateCustomer.value.date_Customer_Bileje;
+                    } else if (company_select.value == '002') {
+                        TuNgay = dateCustomer.value.date_Customer;
+                    } else {
+                        TuNgay = dateCustomer.value.date_Customer_Dbl;
+                    }
+
+                    const today = new Date();
+                    const DenNgay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+                    isLoading.value = true;
+                    axios
+                        .get(`${baseApi}/sync/khach-hang?ma_cty=${company_select.value}&TuNgay=${TuNgay}&DenNgay=${DenNgay}`, axiosConfig)
+                        .then(response => {
+                            isLoading.value = false;
+                            customer.value = response.data;
+                            postCustomer();
+                        })
+                        .catch(error => {
+                            isLoading.value = false;
+                            console.log(error);
+                        });
                 })
-                .catch((error) => {
-                    isLoading.value = false;
+                .catch(error => {
                     console.log(error);
                 });
         };
+
         const filterCustomers = () => {
             isLoading.value = true;
             const selectedCustomerCodes = selectedCustomers.value.map(customerId => {
@@ -220,9 +247,19 @@ export default {
                 const selectedCustomer = formattedData.find(customer => customer.customer_code === customerId);
                 if (selectedCustomer) {
                     hasSelectedCustomer = true;
-                    return axios.post(`${baseUrl}/api/customers`, selectedCustomer);
+                    return axios.post(`${baseUrl}/api/customers`, selectedCustomer)
+                        .then(response => ({
+                            success: true,
+                            customer: selectedCustomer
+                        }))
+                        .catch(error => ({
+                            success: false,
+                            error
+                        }));
                 }
-                return Promise.resolve();
+                return Promise.resolve({
+                    success: false
+                });
             });
             if (!hasSelectedCustomer) {
                 toast.error("Không có khách hàng nào được chọn");
@@ -230,12 +267,24 @@ export default {
                 return;
             }
             Promise.all(promises)
-                .then((responses) => {
+                .then(results => {
+                    const successfulImports = results.filter(result => result.success);
+                    if (successfulImports.length === 0) {
+                        throw new Error("Không có khách hàng nào được import thành công");
+                    }
+                    const lastImportedCustomer = successfulImports[successfulImports.length - 1].customer;
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    return axios.post(`${baseUrl}/api/importDateCustomer`, {
+                        date: currentDate
+                    });
+                })
+                .then(() => {
                     isLoading.value = false;
                     toast.success("Tất cả khách hàng đã được import thành công");
                     customer.value = "";
                 })
-                .catch((error) => {
+                .catch(error => {
+                    isLoading.value = false;
                     if (error.response && error.response.data && error.response.data.errors) {
                         const errorData = error.response.data.errors;
                         const errorMessage = Object.values(errorData).flat().join('\n');
@@ -259,7 +308,8 @@ export default {
             postImportCustomer,
             getImportCustomer,
             errors,
-            customerReturn
+            customerReturn,
+            dateCustomer
 
         }
     }

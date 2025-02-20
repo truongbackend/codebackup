@@ -46,7 +46,7 @@
                         <td>{{ users.find(x=>x.id==orderPx.user_init)?.display_name }}</td>
                         <td>{{ customer.find(x=>x.ID==orderPx.customer_id)?.customer_code }}</td>
                         <td>{{ customer.find(x=>x.ID==orderPx.customer_id)?.customer_name }}</td>
-                        <td v-if="orderPx.total_price">{{orderPx.total_price.toLocaleString()}}</td>
+                        <td v-if="orderPx.total_price">{{formatNumber(orderPx.total_price)}}</td>
                         <td v-else>0</td>
                         <td>{{ orderPx.created }}</td>
                         <td>{{ users.find(x=>x.id==orderPx.user_init)?.ip_logged }}</td>
@@ -182,7 +182,13 @@ export default defineComponent({
         const showEllipsisBefore = computed(() => {
             return visiblePages.value[0] > 1;
         });
-
+        const formatNumber = (value) => {
+            if (value !== undefined && value !== null) {
+                return new Intl.NumberFormat('vi-VN').format(value);
+            } else {
+                return '';
+            }
+        };
         const changePage = (page) => {
             if (page === 'first') {
                 currentPage.value = 1;
@@ -211,6 +217,7 @@ export default defineComponent({
             itemsPerPage,
             currentPage,
             totalPages,
+            formatNumber
         };
     },
 });

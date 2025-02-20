@@ -26,12 +26,17 @@
     <div class="card-header d-flex align-items-center justify-content-between search-model">
         <div class="input-group input-group-merge">
             <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-            <input class="form-control" id="html5-search-input" v-model="searchKeyword" @input="searchProducts" type="text" placeholder="Nhập mã sản phẩm hoặc tên sản phẩm, hoạt chất ..." />
+            <input class="form-control" id="html5-search-input" v-model="searchKeyword" type="text" placeholder="Nhập mã sản phẩm hoặc tên sản phẩm, hoạt chất ..." />
         </div>
     </div>
     <div class="card-header d-flex align-items-center justify-content-between search-model">
-        <div class="col-md-6 product_stock row">
-            <label class="col-sm-3 col-form-label">
+        <div class="col-md-9 product_stock row">
+            <label class="col-sm-2 col-form-label">
+                <button type="button" class="btn btn-outline-danger"@click="searchProducts">
+                    <i class='bx bx-search-alt'></i> Xem kết quả
+                </button>
+            </label>
+            <label class="col-sm-2 col-form-label">
                 <a href="/assets/excel/ImportDataProducts.xlsx" download>
                     <button type="button" class="btn btn-primary">
                         <span class="tf-icons bx bx-cloud-upload"></span> Tải File
@@ -39,13 +44,13 @@
                     </button>
                 </a>
             </label>
-            <div class="col-sm-5 col-form-label import-data">
+            <div class="col-sm-4 col-form-label import-data">
                 <input ref="fileInput" @change="handleFileChange" class="form-control" type="file" id="formFile" />
                 <button @click="importProducts" type="button" class="btn btn-primary">
                     Import
                 </button>
             </div>
-            <div class="col-sm-4 col-form-label" v-if="hasPermission('product.create')">
+            <div class="col-sm-3 col-form-label" v-if="hasPermission('product.create')">
                 <router-link :to="{ name: 'admin-products-create' }">
                     <button type="button" class="btn btn-primary float-end">
                         <i class="bx bx-plus"></i> Thêm sản phẩm
@@ -83,7 +88,7 @@
                         <td class="formart-customer">{{ product.prd_active }}</td>
                         <td class="formart-customer">{{ product.prd_content }}</td>
                         <td>
-                            {{ product.prd_sell_price.toLocaleString() }}
+                            {{ product.prd_sell_price }}
                         </td>
                         <td class="formart-customer">
                             {{
@@ -148,7 +153,6 @@ import axios from "axios";
 import {
     defineComponent,
     ref,
-    watch,
     computed,
     onMounted
 } from "vue";
@@ -214,7 +218,6 @@ export default defineComponent({
                     },
                 })
                 .then((response) => {
-                    console.log(selectedManufacturer.value);
                     products.value = response.data.product.data;
                     totalPages.value = response.data.product.last_page;
                     category.value = response.data.category;
@@ -302,24 +305,6 @@ export default defineComponent({
             }
             getProducts();
         };
-        watch(searchKeyword, () => {
-            currentPage.value = 1;
-            getProducts();
-        });
-
-        const visiblePages = computed(() => {
-            const totalVisiblePages = 10;
-            const halfVisiblePages = Math.floor(totalVisiblePages / 2);
-            const startPage = Math.max(currentPage.value - halfVisiblePages, 1);
-            const endPage = Math.min(startPage + totalVisiblePages - 1, totalPages.value);
-
-            return Array.from({
-                length: endPage - startPage + 1
-            }, (_, i) => startPage + i);
-        });
-        const showEllipsisBefore = computed(() => {
-            return visiblePages.value[0] > 1;
-        });
         const searchProducts = () => {
             currentPage.value = 1;
             getProducts();
@@ -344,7 +329,9 @@ export default defineComponent({
                 return matchesStatus && matchesCategory && matchesManufacturer;
             });
         });
-        getProducts();
+        onMounted(() => {
+            getProducts();
+        });
         return {
             products,
             status,
@@ -367,7 +354,8 @@ export default defineComponent({
             hasPermission,
             userPermission,
             itemsPerPage,
-            displayedPages
+            displayedPages,
+            getProducts,
         };
     },
 });

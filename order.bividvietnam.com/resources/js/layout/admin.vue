@@ -36,13 +36,13 @@ export default defineComponent({
         onMounted(async () => {
             try {
                 await loadScript('/assets/vendor/js/menu.js');
+                await loadScript('/assets/js/custom.js');
                 await loadScript('/assets/js/main.js');
-                await loadScript('/assets/vendor/js/helpers.js');
                 await loadScript('/assets/js/ui-toasts.js');
             } catch (error) {
                 console.error('Error loading scripts:', error);
             }
-        })();
+        });
     },
     components: {
         AdminHeader,

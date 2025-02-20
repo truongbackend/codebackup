@@ -53,6 +53,7 @@
                     </div>
                 </form>
                 <div class="modal-footer mt-3">
+                    
                     <button type="button" class="btn btn-primary float-end mt-2" data-bs-toggle="modal" data-bs-target="#basicModalCustomer">
                         <i class='bx bxs-user-pin'></i>Thêm khách hàng
                     </button>
@@ -62,7 +63,6 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exLargeModal">
                         <i class='bx bx-message-alt-add'></i>Thêm quyền
                     </button>
-
                     <button @click="putUsersRoles()" class="btn btn-primary">Lưu</button>
                     <router-link :to="{ name: 'admin-permission' }" class="btn btn-danger me-sm-2">
                         Thoát
@@ -140,8 +140,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true" >
-                    <div class="modal-dialog modal-xl" role="document" >
+                <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-body" id="both-scrollbars-example">
                                 <div class="row">
@@ -353,20 +353,20 @@
             </div>
         </div>
         <div class="col-md-3">
-        <div class="demo-inline-spacing mt-4">
-            <small class="text-light">Công ty</small>
-            <div class="list-group">
-                <template v-for="item in company">
-                    <label class="list-group-item">
-                        <input class="form-check-input me-1" type="checkbox" :value="item.id" v-model="selectedCompanny">
-                        {{ item.name }}
-                    </label>
-                </template>
+            <div class="demo-inline-spacing mt-4">
+                <small class="text-light">Công ty</small>
+                <div class="list-group">
+                    <template v-for="item in company">
+                        <label class="list-group-item">
+                            <input class="form-check-input me-1" type="checkbox" :value="item.id" v-model="selectedCompanny">
+                            {{ item.name }}
+                        </label>
+                    </template>
+                </div>
             </div>
-        </div>
-        <button type="button" class="btn btn-outline-secondary mt-3" @click="resetCompany" >
-            <i class='bx bx-reset'></i> Reset
-        </button>
+            <button type="button" class="btn btn-outline-secondary mt-3" @click="resetCompany">
+                <i class='bx bx-reset'></i> Reset
+            </button>
         </div>
     </div>
 </div>
@@ -387,6 +387,7 @@
                 Phân quyền khách hàng
             </button>
         </li>
+        
     </ul>
     <div class="tab-content">
         <div class="tab-pane fade show active" id="navs-pills-top-home" role="tabpanel">
@@ -465,7 +466,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(userAssigned, index) in usersAssignedID" :key="index">
+                        <tr v-for="(userAssigned, index) in usersAssignedID" :key="index">                          
                             <td>{{ index + 1 }}</td>
                             <td>{{ userAssigned.display_name }}</td>
                             <td>{{ userAssigned.email }}</td>
@@ -483,12 +484,62 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
         <div class="tab-pane fade" id="navs-pills-top-customer" role="tabpanel">
-            <table class="table table-bordered mb-4">
+                <div class="input-group input-group-merge">
+                    <span class="input-group-text" id="basic-addon-search31">
+                        <i class="bx bx-search"></i>
+                    </span>
+                    <input class="form-control"  v-model="searchTerm" id="html5-search-input" type="text" placeholder="Hãy nhập thông tin tìm kiếm...">
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-2"><button @click="searchCustomers" type="button" class="btn btn-outline-danger"><i class="bx bx-search-alt"></i> Xem kết quả </button></div>
+                    <div class="col-md">
+                        <button type="button" class="btn btn-outline-primary float-end" data-bs-toggle="modal" data-bs-target="#basicModalReplaceCustomer"><i class='bx bxs-user-account'></i> Chuyển khách hàng</button>
+                    </div>
+                    
+                </div>
+                <div class="modal fade" id="basicModalReplaceCustomer" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel1">Chuyển đổi khách hàng</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="nameBasic" class="form-label">Tên nhân viên</label>
+                                        <model-list-select :list="users" v-model="selectedUserConvert" option-value="id" option-text="display_name" placeholder="Chọn tên nhân viên"></model-list-select>
+                                    </div>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col mb-0">
+                                        <label for="emailBasic" class="form-label">Email</label>
+                                        <model-list-select :list="users" v-model="selectedUserConvert" option-value="id" option-text="email" placeholder="Chọn tên nhân viên"></model-list-select>
+                                    </div>
+                                    <div class="col mb-0">
+                                        <label for="dobBasic" class="form-label">Số điện thoại</label>
+                                        <select v-model="selectedUserConvert" disabled class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" readonly>
+                                            <option v-for="user in users" :value="user.id">{{ user.phone }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" @click="convertCustomer" class="btn btn-danger">Lưu </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            <table class="table table-bordered mb-4 mt-3">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>STT</th>
                         <th>Mã khách hàng</th>
                         <th>Tên khách hàng</th>
@@ -499,6 +550,8 @@
                 </thead>
                 <tbody>
                     <tr v-for="(customerAssigneds, index) in customerAssigned" :key="index">
+                        <td><input 
+                            type="checkbox" :id="'checkbox-' + customerAssigneds.ID" @click="customerClick(customerAssigneds.ID)" class="form-check-input mt-2" :value="customerAssigneds.ID"></td>
                         <td>{{ index + 1 }}</td>
                         <td>{{ customerAssigneds.customer_code }}</td>
                         <td>{{ customerAssigneds.customer_name }}</td>
@@ -534,7 +587,9 @@ import {
 import {
     inject
 } from 'vue';
-import { ModelListSelect } from 'vue-search-select';
+import {
+    ModelListSelect
+} from 'vue-search-select';
 export default defineComponent({
     components: {
         ModelListSelect,
@@ -558,6 +613,9 @@ export default defineComponent({
         const company = ref([]);
         const customerAssigned = ref([]);
         const usersAssignedID = ref([]);
+        const searchTerm = ref('');
+        const selectedUserConvert = ref([]);
+        const customerCheckbox = ref([]);
         const usersAssigned = ref({
             display_name: '',
             email: '',
@@ -1146,10 +1204,10 @@ export default defineComponent({
                     store_id: userData.store_id,
                     company_id: userData.company_id,
                 };
-                company.value = companyData; 
+                company.value = companyData;
                 stores.value = storeData;
                 userRoles.value = response.data.roles[0].id;
-                 selectedCompanny.value = companyData.filter(company => userData.company_id.includes(company.id)).map(company => company.id);
+                selectedCompanny.value = companyData.filter(company => userData.company_id.includes(company.id)).map(company => company.id);
             } catch (error) {
                 console.error('Error fetching user permissions:', error);
             }
@@ -1245,6 +1303,7 @@ export default defineComponent({
                 const response = await axios.get(`${baseUrl}/api/permissionData/${route.params.id}/show`);
                 usersAssigned.value = response.data.users;
                 usersAssignedID.value = response.data.usersAssigned;
+                console.log(usersAssignedID.value);
                 stores.value = response.data.stores;
             } catch (error) {
                 console.error('Error fetching user permissions:', error);
@@ -1268,9 +1327,11 @@ export default defineComponent({
             return store ? store.store_name : '';
         };
         const deleteUsers = (userId) => {
-             const idUserDelete = route.params.id;
+            const idUserDelete = route.params.id;
             axios
-                .put(`${baseUrl}/api/permissionData/${userId}`, { idUserDelete })
+                .put(`${baseUrl}/api/permissionData/${userId}`, {
+                    idUserDelete
+                })
                 .then((response) => {
                     getUsersAssigned();
                     toast.success('Xoá người dùng thành công');
@@ -1280,6 +1341,14 @@ export default defineComponent({
                     toast.error('Xoá người dùng thất bại');
                 });
         };
+
+        const searchCustomers = () => {
+            const term = searchTerm.value.toLowerCase();
+            customerAssigned.value = customerAssigned.value.filter(customer =>
+                customer.customer_code.toLowerCase().includes(term) ||
+                customer.customer_name.toLowerCase().includes(term)
+            );
+            };
         const customerAddToUser = () => {
             axios
                 .get(`${baseUrl}/api/getCustomerToUser`)
@@ -1300,12 +1369,38 @@ export default defineComponent({
                     console.log(error);
                 });
         }
+        const selectedCustomerIds = ref([]);
+
+        const customerClick = (customerAssignedId) => {
+            const index = selectedCustomerIds.value.indexOf(customerAssignedId);
+            if (index === -1) {
+                selectedCustomerIds.value.push(customerAssignedId);
+            } else {
+                selectedCustomerIds.value.splice(index, 1);
+            }
+
+            console.log('Selected Customer IDs:', selectedCustomerIds.value);
+        };
+        const convertCustomer = () => {
+            axios
+                .post(`${baseUrl}/api/getCustomerToConvert/${route.params.id}`, {
+                    selectedUserConvert: selectedUserConvert.value,
+                    customerCheckboxes: selectedCustomerIds.value,
+                })
+                .then((response) => {
+                    toast.success('Chuyển người dùng thành công');
+                })
+                .catch((error) => {
+                    toast.error('Chuyển đổi thất bại');
+                });
+        };
         const putCustomerAssigned = async () => {
             try {
                 const response = await axios.put(`${baseUrl}/api/postCustomerToUser/${route.params.id}`, {
                     selectedCustomer: selectedCustomer.value,
+                    customerCheckboxes: selectedCustomerIds.value,
                 });
-                getCustomerAddToUser();
+                getCustomerAddToUser(); 
                 toast.success('Bạn đã thêm người dùng thành công');
             } catch (error) {
                 console.error('Error adding user:', error);
@@ -1323,7 +1418,7 @@ export default defineComponent({
                     toast.error('Xoá người dùng thất bại');
                 });
         }
-        const resetCompany = async() =>{
+        const resetCompany = async () => {
             try {
                 const response = await axios.put(`${baseUrl}/api/getCompany/${route.params.id}`);
                 toast.success('Bạn đã reset công ty thành công');
@@ -1332,6 +1427,7 @@ export default defineComponent({
                 console.error('Error adding user:', error);
             }
         }
+        
         onMounted(() => {
             getUsersRoles();
             getUserPermission();
@@ -1373,6 +1469,12 @@ export default defineComponent({
             company,
             selectedCompanny,
             resetCompany,
+            searchCustomers,
+            searchTerm,
+            convertCustomer,
+            selectedUserConvert,
+            customerCheckbox,
+            customerClick
         };
     },
 });

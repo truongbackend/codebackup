@@ -32,7 +32,6 @@
         </div>
         <div class="row mt-3">
             <div class="col-md-3">
-
                 <button type="button" class="btn btn-outline-danger" @click="getInventory">
                     <i class='bx bx-search-alt'></i> Xem kết quả
                 </button>
@@ -631,7 +630,7 @@ export default {
         };
         const formatNumber = (value) => {
             if (value !== undefined && value !== null) {
-                return value.toLocaleString();
+                return new Intl.NumberFormat('vi-VN').format(value);
             } else {
                 return '';
             }

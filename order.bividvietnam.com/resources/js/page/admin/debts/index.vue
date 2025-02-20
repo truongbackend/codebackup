@@ -6,7 +6,7 @@
             <div class="col-md-10">
                 <div class="input-group input-group-merge">
                     <span class="input-group-text" id="basic-addon-search31"><i class="bx bx-search"></i></span>
-                    <input type="text" class="form-control" v-model="searchKeyword" @input="searchProducts" placeholder="Nhập thông tin tìm kiếm ..." aria-label="Search..." aria-describedby="basic-addon-search31">
+                    <input type="text" class="form-control" v-model="searchKeyword" placeholder="Nhập thông tin tìm kiếm ..." aria-label="Search..." aria-describedby="basic-addon-search31">
                 </div>
             </div>
             <div class="col-md-2">
@@ -17,6 +17,13 @@
                 </select>
             </div>
         </div>
+        <div class="row mt-3">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-danger" @click="searchProducts">
+                        <i class='bx bx-search-alt'></i> Xem kết quả
+                    </button>
+                </div>
+            </div>
     </div>
     <div class="card-body">
         <div class="table-responsive text-nowrap mb-4">
@@ -42,7 +49,7 @@
                         </td>
                         <td class="text-danger">{{ debt.expdate }}</td>
                         <td class="text-danger"> Quá hạn {{ calculateRemainingDays(debt.expdate) }} ngày</td>
-                        <td class="text-danger">{{ debt.paid.toLocaleString() }}</td>
+                        <td class="text-danger">{{ formatNumber(debt.paid) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -189,6 +196,13 @@ export default defineComponent({
         const showEllipsisBefore = computed(() => {
             return visiblePages.value[0] > 1;
         });
+        const formatNumber = (value) => {
+                if (value !== undefined && value !== null) {
+                    return new Intl.NumberFormat('vi-VN').format(value);
+                } else {
+                    return '';
+                }
+            };
         const updateSearchCustomer = () => {
             currentPage.value = 1;
             getDebts();
@@ -231,6 +245,7 @@ export default defineComponent({
             updateSearchCustomer,
             inputCustomer,
             filterCustomers,
+            formatNumber
         };
     },
 });

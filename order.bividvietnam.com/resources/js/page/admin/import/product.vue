@@ -100,6 +100,7 @@ export default {
         const selectedProducts = ref([]);
         const company_select = ref("");
         const isLoading = ref(false);
+        const dateProduct = ref([]);
         const axiosConfig = {
             headers: {
                 Authorization: `Bearer ${tokenApi}`,
@@ -125,9 +126,19 @@ export default {
             }
         };
         const getImportProducts = () => {
+            axios
+            .get(`${baseUrl}/api/getDateCustomer`)
+                .then(response => {
+                    dateProduct.value = response.data[0];
+                    const TuNgay = dateProduct.value.date_Product;
+                    console.log(dateProduct.value);
+                    const today = new Date();
+                    const DenNgay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    isLoading.value = true;
+                    axios
             isLoading.value = true;
             axios
-                .get(`${baseApi}/sync/san-pham?ma_cty=${company_select.value}`, axiosConfig)
+                .get(`${baseApi}/sync/san-pham?ma_cty=${company_select.value}&TuNgay=${TuNgay}&DenNgay=${DenNgay}`, axiosConfig)
                 .then((response) => {
                     isLoading.value = false;
                     products.value = response.data;
@@ -135,6 +146,10 @@ export default {
                 })
                 .catch((error) => {
                     isLoading.value = false;
+                    console.log(error);
+                });
+            })
+                .catch(error => {
                     console.log(error);
                 });
         };
@@ -193,7 +208,7 @@ export default {
             if (productsReturn.value.length === 0) {
                 isLoading.value = false;
                 toast.error("Vui lòng lọc dữ liệu trước khi đẩy");
-                return; 
+                return;
             }
             if (selectedProducts.value.length === 0) {
                 toast.error("Không có khách hàng nào được chọn");
@@ -220,6 +235,10 @@ export default {
                     isLoading.value = false;
                     toast.success("Tất cả sản phẩm đã được import thành công");
                     products.value ="";
+                    const currentDate = new Date().toISOString().split('T')[0];
+                    return axios.post(`${baseUrl}/api/importDateCustomer`, {
+                        dateProduct: currentDate
+                    });
                 })
                 .catch((error) => {
                     if (selectedProducts.value.length === 0) {
@@ -232,7 +251,6 @@ export default {
         onMounted(async () => {
             await fetchUserData();
             getImportProducts();
-            // postProduct();
         });
         return {
             isLoading,
@@ -244,7 +262,8 @@ export default {
             postImportProducts,
             getImportProducts,
             errors,
-            productsReturn
+            productsReturn,
+            dateProduct
         }
     }
 }

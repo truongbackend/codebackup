@@ -219,4 +219,12 @@ class PermissionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function getCustomerToConvert (Request $request, $id){
+        $userConvert = $request->selectedUserConvert['id'];
+        $userCheckList = $request->customerCheckboxes;
+        Customer::whereIn('id', $userCheckList)->update(['user_assigned' => $userConvert]);
+        return response()->json([
+            'message' => 'Chuyển khách hàng thành công',
+        ]);
+    }
 }

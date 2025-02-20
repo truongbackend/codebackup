@@ -7,12 +7,11 @@
             </span>
             <span class="app-brand-text menu-text fw-bolder ms-6">BIVID Pharma</span>
         </router-link>
-        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none" id="close-menu">
+            <i class="bx bx-chevron-left bx-sm align-middle" ></i>
         </a>
     </div>
     <div class="menu-inner-shadow"></div>
-
     <ul class="menu-inner py-1">
         <li class="menu-item">
             <router-link :to="{ name: 'dashboard' }" class="menu-link">
@@ -21,10 +20,49 @@
             </router-link>
         </li>
         <li class="menu-item">
+            <router-link :to="{ name: 'admin-inbox' }" class="menu-link">
+                <i class='menu-icon bx bx-credit-card'></i>
+                <div data-i18n="Authentications">Hộp thư</div>
+            </router-link>
+        </li>
+        <li class="menu-item">
             <router-link :to="{ name: 'admin-order' }" class="menu-link" v-if="hasPermission('order')">
                 <i class='menu-icon bx bx-shopping-bag'></i>
                 <div data-i18n="Authentications">Đơn hàng</div>
             </router-link>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle" v-if="hasPermission('order')">
+                <i class='menu-icon bx bx-shopping-bag'></i>
+                <div data-i18n="Authentications">Đơn hàng online</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-order-baolong' }" class="menu-link">
+                        <div data-i18n="Authentications">Bảo long</div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-order-bileje' }" class="menu-link">
+                        <div data-i18n="Authentications">Bileje</div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-order-baolongpharm' }" class="menu-link">
+                        <div data-i18n="Authentications">Baolongpharm</div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-order-babyshop' }" class="menu-link">
+                        <div data-i18n="Authentications">Babyshop</div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-order-saigon' }" class="menu-link">
+                        <div data-i18n="Authentications">Saigon</div>
+                    </router-link>
+                </li>
+            </ul>
         </li>
         <li class="menu-item" v-if="hasPermission('customer')">
             <router-link :to="{ name: 'admin-customer' }" class="menu-link">
@@ -52,6 +90,35 @@
                 <li class="menu-item">
                     <router-link :to="{ name: 'admin-category' }" class="menu-link" v-if="hasPermission('category')">
                         <div data-i18n="Authentications">Nhóm sản phẩm</div>
+                    </router-link>
+                </li>
+            </ul>
+        </li>
+        
+        
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bxl-product-hunt"></i>
+                <div data-i18n="Authentications">Quản lý cận Date</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-expirationDate' }" class="menu-link">
+                        <div data-i18n="Authentications">Kế hoạch bán hàng cận date <span class="badge rounded-pill bg-danger">
+                                <i class="bi bi-star-fill"></i> New
+                            </span></div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-implementationDate' }" class="menu-link" v-if="hasPermission('category')">
+                        <div data-i18n="Authentications">      
+                            Kết quả thực hiện bán hàng cận date
+                        </div>
+                    </router-link>
+                </li>
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-implementationReport' }" class="menu-link" v-if="hasPermission('category')">
+                        <div data-i18n="Authentications">Báo cáo theo dõi bán hàng cận date</div>
                     </router-link>
                 </li>
             </ul>
@@ -98,6 +165,19 @@
                 <li class="menu-item">
                     <router-link :to="{ name: 'admin-setting-email' }" class="menu-link" v-if="checkRole('Admin')">
                         <div data-i18n="Authentications">Mẫu Email</div>
+                    </router-link>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle" v-if="checkRole('Admin')">
+                <i class='menu-icon bx bx-cog'></i>
+                <div data-i18n="Authentications">Quản trị</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item">
+                    <router-link :to="{ name: 'admin-software' }" class="menu-link">
+                        <div data-i18n="Authentications">Khoá phần mềm</div>
                     </router-link>
                 </li>
             </ul>
@@ -237,7 +317,7 @@
                 </li>
             </ul>
         </li>
-        
+
     </ul>
 </aside>
 </template>
@@ -277,12 +357,18 @@ export default defineComponent({
         function checkRole(args) {
             return userRoles.value.includes(args);
         }
+        function DateTime() {
+           const date = Date();
+           console.log(date);
+        }
+        
         return {
             globalState,
             hasPermission,
             checkRole,
             userRoles,
-            userPermission
+            userPermission,
+            DateTime
         };
     },
 });

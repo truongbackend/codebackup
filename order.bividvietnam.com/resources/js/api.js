@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 const globalState = reactive({
-    baseUrl: 'https://testorder.bividvietnam.com',
+  baseUrl: 'http://192.168.1.128:8000',
   permission: [],
-  baseApi:'https://portal.bividvietnam.com:63231'
+  baseApi:'http://192.168.1.101'
 });
 export default globalState;

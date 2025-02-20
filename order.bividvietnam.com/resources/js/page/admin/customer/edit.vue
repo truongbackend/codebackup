@@ -50,8 +50,8 @@
                     <div class="row mb-3">
                         <label for="exampleFormControlSelect1" class="col-sm-2 col-form-labe">Khu vực</label>
                         <div class="col-sm-10">
-                            <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
-                                <option v-for="stores in stores" :value="stores.value" :key="stores.value">{{ stores.store_name }}</option>
+                            <select v-model="customer.store_id" class="form-select" id="exampleFormControlSelect1" aria-label="Default select example">
+                                <option v-for="stores in stores" :value="stores.ID" :key="stores.value">{{ stores.store_name }}</option>
                             </select>
                         </div>
                     </div>
@@ -110,6 +110,7 @@ export default defineComponent({
         const errors = ref({});
         const stores = ref([]);
         const company = ref([]);
+        const selectStores = ref([]);
         const customer = ref({
             customer_code: "",
             customer_name: "",
@@ -117,7 +118,7 @@ export default defineComponent({
             customer_phone: "",
             customer_addr: "",
             customer_ship_addr: "",
-            customer_store: "",
+            store_id: "",
             notes: "",
             customer_image: "",
             user_init: 0,
@@ -132,7 +133,7 @@ export default defineComponent({
                     company.value = response.data.company;
                     const filteredCompany = company.value.find(item => item.id === customer.value.company_id);
                     if (filteredCompany) {
-                        customer.value.company_name = filteredCompany.name; 
+                        customer.value.company_name = filteredCompany.name;
                     } else {
                     }
                 })
@@ -143,6 +144,7 @@ export default defineComponent({
         const updateCustomer = () => {
             axios
                 .put(`${baseUrl}/api/customers/${params.id}`, customer.value)
+                
                 .then(() => {
                     toast.success("Bạn đã cập nhật tài khoản thành công");
                     router.push({
@@ -157,9 +159,7 @@ export default defineComponent({
                     }
                 });
         };
-
         getCustomerEdit();
-
         return {
             company,
             customer,

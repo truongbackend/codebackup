@@ -33,7 +33,12 @@ class TemplateController extends Controller
      */
     public function create()
     {
-        //
+        $templates = Template::find(7);
+        return response()->json([
+            'template' => [
+                'data' => $templates,
+            ],
+        ]);
     }
 
     /**

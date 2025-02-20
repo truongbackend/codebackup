@@ -93,7 +93,6 @@ class UserController extends Controller
         try {
             $validated = $request->validate([
                 'email' => 'required|unique:cms_users,email|email',
-                'phone' => 'required',
                 'role' => 'required',
                 'store_id' => 'required',
                 'display_name' => 'required',
@@ -101,7 +100,6 @@ class UserController extends Controller
                 'company_id'=> 'required',
             ], [
                 "email.required" => "Vui lòng nhập email",
-                "phone.required" => "Vui lòng nhập số điện thoại",
                 "role.required" => "Vui lòng nhập nhóm người dùng",
                 "display_name.required" => "Vui lòng nhập tên",
                 "store_id.required" => "Vui lòng nhập khu vực",
@@ -114,7 +112,7 @@ class UserController extends Controller
             ]);
             $validated['password'] = Hash::make($request->input('password'));
             $validated['user_status'] = 1;
-            $validated['company_id'] = json_encode($validated['company_id']); 
+            $validated['company_id'] = json_encode($validated['company_id']);
             $user = User::create($validated);
             $role = Role::where('id', $validated['role'])->first();
             $user->assignRole($role);

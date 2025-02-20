@@ -33,7 +33,6 @@ export default defineComponent({
             try {
                 await loadScript('/assets/vendor/js/menu.js');
                 await loadScript('/assets/js/main.js');
-                await loadScript('/assets/vendor/js/helpers.js');
                 await loadScript('/assets/js/ui-toasts.js');
             } catch (error) {
                 console.error('Error loading scripts:', error);

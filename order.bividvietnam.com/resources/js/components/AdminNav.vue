@@ -112,7 +112,7 @@ export default defineComponent({
                     },
                 });
                 user.value = response.data;
-                
+
             } catch (error) {
                 console.error(error);
                 toast.error('Người dùng chưa đăng nhập');
@@ -140,7 +140,6 @@ export default defineComponent({
                 company.value = response.data.company;
             } catch (error) {
                 console.error(error);
-                // toast.error("Lỗi khi lấy thông tin công ty");
             }
         };
         const selectCompanyUser = async () => {
@@ -149,12 +148,11 @@ export default defineComponent({
                 window.location.reload();
             } catch (error) {
                 console.error(error);
-                // toast.error("Lỗi khi cập nhật thông tin công ty cho người dùng");
             }
         };
 
         onMounted(() => {
-            fetchUserData(); 
+            fetchUserData();
             logout;
             getCompany();
         });

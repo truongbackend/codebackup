@@ -7,17 +7,19 @@ use App\Models\Customer;
 use App\Models\UsersGroup;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\CustomersBids;
 use App\Models\Debts;
 use App\Models\Functions;
 use App\Models\Order;
 use App\Models\OrderPx;
 use App\Models\User;
+use App\Models\CustomersBids;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendCustomer;
 use Nette\Utils\Random;
 use App\Models\Company;
+use App\Models\Customers_Bids_Products;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 class CustomerController extends Controller
 {
@@ -30,28 +32,28 @@ class CustomerController extends Controller
 {
     $user = Auth::user();
     $keyword = $request->input('keyword');
-    $customers = Customer::query();
+    $customersQuery = Customer::query();
+
     if ($user->company_select) {
-        $customers->where('company_id', $user->company_select);
+        $customersQuery->where('company_id', $user->company_select);
     }
+
     if ($keyword) {
-        $customers->where(function ($query) use ($keyword) {
+        $customersQuery->where(function ($query) use ($keyword) {
             $query->where('customer_name', 'like', "%{$keyword}%")
-                ->orWhere('customer_phone', 'like', "%{$keyword}%")
-                ->orWhere('customer_code', 'like', "%{$keyword}%");
+                  ->orWhere('customer_phone', 'like', "%{$keyword}%")
+                  ->orWhere('customer_code', 'like', "%{$keyword}%");
         });
     }
 
     if ($user->hasRole('Admin')) {
-        $customers->orderBy('created', 'desc')->paginate(50);
+        $customers = $customersQuery->orderBy('created', 'desc')->paginate(50);
     } else {
-        $assignedUsers = [];
-        $this->getUsersAssignedToUser($user->id, $assignedUsers);
-        $assignedUserIds = array_unique(array_merge([$user->id], array_column($assignedUsers, 'id')));
-        $customers->whereIn('user_assigned', $assignedUserIds);
+        $assignedUserIds = $this->getUsersAssignedToUser($user->id);
+        $assignedUserIds[] = $user->id; // Include the current user's ID
+        $customers = $customersQuery->whereIn('user_assigned', $assignedUserIds)->orderBy('created', 'desc')->paginate(50);
     }
 
-    $customers = $customers->orderBy('created', 'desc')->paginate(50);
     $stores = Stores::all();
     $data = [
         'customers' => $customers,
@@ -60,15 +62,20 @@ class CustomerController extends Controller
 
     return response()->json($data);
 }
-public function getUsersAssignedToUser($id, &$assignedUsers = [])
+
+public function getUsersAssignedToUser($id, &$assignedUserIds = [])
 {
     $users = User::where('user_assigned', 'LIKE', "%$id%")->get();
+
     foreach ($users as $user) {
-        $assignedUsers[] = $user;
-        $this->getUsersAssignedToUser($user->id, $assignedUsers);
+        if (!in_array($user->id, $assignedUserIds)) {
+            $assignedUserIds[] = $user->id;
+            $this->getUsersAssignedToUser($user->id, $assignedUserIds);
+        }
     }
-    return $assignedUsers;
+    return $assignedUserIds;
 }
+
 
     /**
      * Show the form for creating a new resource.
@@ -94,11 +101,6 @@ public function getUsersAssignedToUser($id, &$assignedUsers = [])
      */
     public function store(Request $request)
     {
-    $validated = $request->validate([
-        'customer_name' => 'required|max:255',
-    ], [
-        "customer_name.required" => "Vui lòng nhập tên khách hàng",
-    ]);
     $user = Auth::user()->id;
     $request->merge(['user_assigned' => $user]);
     $currentYear = date('Y');
@@ -220,7 +222,7 @@ public function getUsersAssignedToUser($id, &$assignedUsers = [])
             $customer->user_assigned = null;
             $customer->save();
             return response()->json(['message' => 'User assigned relationship removed successfully']);
-            
+
         } else {
             return response()->json(['error' => 'User not found'], 404);
         }
@@ -231,6 +233,50 @@ public function getUsersAssignedToUser($id, &$assignedUsers = [])
         $customers->user_assigned = $id;
         $customers->save();
         return response()->json(['message' => 'User assigned relationship removed successfully']);
+    }
+    public function biddingContractCustomer(){
+        $products = Product::all();
+        $data = [
+            'product' => $products,
+        ];
+        return response()->json($data);
+    }
+    public function postBiddingCustomer(Request $request) {
+        $customersBid = CustomersBids::create($request->all());
+        $product = $request->input('product');
+        $price = $request->input('prd_sell_price');
+        $quantity = $request->input('total_quantity');
+        $customer = $request->input('customer_id');
+        $customersBidsProduct = Customers_Bids_Products::create([
+            'bid_id' => $customersBid->id,
+            'product_id' => $product['ID'],
+            'prd_code' => $product['prd_code'],
+            'prd_sell_price' =>$price,
+            'quantity' =>$quantity,
+            'customer_id' =>$customer,
+        ]);
+        return response()->json(['message' => 'Tạo thành công mã hợp đồng']);
+    }
+    public function editBiddingCustomer( Request $request){
+        $customer_id = $request->input('customer_id');
+        $output_code = $request->input('output_code');
+        $customerBid  = CustomersBids::where('customer_id', $customer_id)
+                            ->where('output_code', $output_code)
+                            ->first();
+        $customersBidsProducts = Customers_Bids_Products::where('customer_id', $customer_id)
+                            ->where('bid_id', $customerBid->ID)
+                            ->get();
+        dd($customersBidsProducts);
+        $data = [
+            'product' => $customerBid,
+            'products' => $customersBidsProducts
+        ];
+        return response()->json($data);
+    }
+    public function DeleteBiddingCustomer(Request $request){
+        $customer_id = $request->input('customer_id');
+        $customerBids = $request->input('output_code');
+        dd( $customerBids);
     }
 
 }

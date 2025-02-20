@@ -73,21 +73,6 @@ const admin = [
                 component: () =>import ("../page/admin/contact/index.vue"),
             },
             {
-                path: "status",
-                name: "admin-status",
-                component: () =>import ("../page/admin/status/index.vue"),
-            },
-                {
-                    path: "status/create",
-                    name: "admin-status-create",
-                    component: () =>import ("../page/admin/status/create.vue"),
-                },
-                {
-                    path: "status/:id/update",
-                    name: "admin-status-update",
-                    component: () =>import ("../page/admin/status/edit.vue"),
-                },
-            {
                 path: "template",
                 name: "admin-setting-template",
                 component: () =>import ("../page/admin/template/index.vue"),
@@ -127,11 +112,32 @@ const admin = [
                     name: "admin-order-update",
                     component: () =>import ("../page/admin/order/edit.vue"),
                 },
-                {
-                    path: "order/:order",
-                    name: "admin-order-detail",
-                    component: () => import("../page/admin/order/roles.vue"),
-                },
+
+            {
+                path: "order-online-baolong",
+                name: "admin-order-baolong",
+                component: () =>import ("../page/admin/orderOnline/baolong.vue")
+            },
+            {
+                path: "order-online-bileje",
+                name: "admin-order-bileje",
+                component: () =>import ("../page/admin/orderOnline/bileje.vue")
+            },
+            {
+                path: "order-online-baolongpharm",
+                name: "admin-order-baolongpharm",
+                component: () =>import ("../page/admin/orderOnline/baolongpharm.vue")
+            },
+            {
+                path: "order-online-babyshop",
+                name: "admin-order-babyshop",
+                component: () =>import ("../page/admin/orderOnline/babyshop.vue")
+            },
+            {
+                path: "order-online-saigon",
+                name: "admin-order-saigon",
+                component: () =>import ("../page/admin/orderOnline/saigon24.vue")
+            },
             {
                 path: "account",
                 name: "admin-account",
@@ -233,6 +239,36 @@ const admin = [
                 component: () => import ("../page/admin/sop/index.vue")
             },
             {
+                path: "softwarelock",
+                name: "admin-software",
+                component: () =>import ("../page/admin/software/index.vue")
+            },
+            {
+                path: "inbox",
+                name: "admin-inbox",
+                component: () =>import ("../page/admin/inbox/index.vue")
+            },
+            {
+                path: "inbox/:id/edit",
+                name: "admin-inbox-edit",
+                component: () => import ("../page/admin/inbox/edit.vue")
+            },
+            {
+                path: "expirationDate",
+                name: "admin-expirationDate",
+                component: () =>import ("../page/admin/expirationDate/index.vue")
+            },
+            {
+                path: "implementationDate",
+                name: "admin-implementationDate",
+                component: () =>import ("../page/admin/implementationDate/index.vue")
+            },
+            {
+                path: "implementationReport",
+                name: "admin-implementationReport",
+                component: () =>import ("../page/admin/implementationReport/index.vue")
+            },
+            {
                 path: "dashboard",
                 name: "dashboard",
                 component: () => import ("../page/admin/dashboard/index.vue")
@@ -251,11 +287,6 @@ const admin = [
                 path: "salessummary",
                 name: "salessummary",
                 component: () =>import ("../page/admin/salessummary/index.vue")
-            },
-            {
-                path: "manager",
-                name: "admin-manager",
-                component: () =>import ("../page/admin/manager/index.vue")
             },
             {
                 path: "contractor",

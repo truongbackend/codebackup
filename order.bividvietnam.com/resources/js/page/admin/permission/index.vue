@@ -1,13 +1,18 @@
 <template>
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Phân quyền người dùng <i class="bx bx-chevron-right" style="font-size: 40px;"></i></span> Danh sách người dùng</h4>
 <div class="card">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <div class="col-md-10">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-10">
             <input class="form-control col-md-5" id="html5-search-input" v-model="searchKeyword" @input="searchUser" type="text" placeholder="Hãy nhập tên nhân viên hoặc số điện thoại...">
         </div>
-        <router-link :to="{ name: 'admin-users-create' }">
+        <div class="col-md-2">
+            <router-link :to="{ name: 'admin-users-create' }">
             <button type="button" class="btn btn-primary float-end"> <i class='bx bx-plus'></i>Thêm người dùng</button>
         </router-link>
+        </div>
+        </div>
+
     </div>
     <div class="card-body">
         <div class="table-responsive text-nowrap">
@@ -40,8 +45,8 @@
                         <td v-else>
                             <span class="badge rounded-pill bg-danger"> Ngừng động </span>
                         </td>
-                        <td class="text-center"> 
-                                                       
+                        <td class="text-center">
+
                             <router-link :to="{ name: 'admin-permission-user', params: { id: user.id } }">
                                 <i class="bx bxs-edit text-dark"></i>
                             </router-link>
@@ -154,7 +159,7 @@ export default defineComponent({
                 .then((response) => {
                     stores.value = response.data.stores;
                     userRoles.value = response.data.userRoles;
-                    users.value = response.data.users.data;
+                    users.value = response.data.users;
                     totalPages.value = response.data.users.last_page;
                 })
                 .catch((error) => {

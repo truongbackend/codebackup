@@ -29,18 +29,17 @@
                                 <td>{{ item.product_name }}</td>
                                 <td>{{item.quantity}}</td>
                                 <td>{{ (product_unt.find(x => x.ID === item.bid_id)?.prd_unit_name) }}</td>
-                                <td>{{item.price.toLocaleString() }}</td>
-                                <td>{{ (item.quantity * item.price).toLocaleString() }}</td>
+                                <td>{{formatNumber(item.price) }}</td>
+                                <td>{{ formatNumber(item.quantity * item.price) }}</td>
                             </tr>
                         </tbody>
                         <tbody v-else>
-
                         </tbody>
                     </table>
                 </div>
             </div>
             <div class="card-body">
-                <div class="alert alert-warning text-end" role="alert">Số lượng: {{totalQuantity}} , Thuế:{{ orderPx.find(cust => cust.ID === debts.order_id)?.vat.toLocaleString() }} , Tổng tiền: {{ totalAmount.toLocaleString() }}</div>
+                <div class="alert alert-warning text-end" role="alert">Số lượng: {{totalQuantity}} , Thuế:{{ formatNumber(orderPx.find(cust => cust.ID === debts.order_id)?.vat) }} , Tổng tiền: {{ formatNumber(totalAmount) }}</div>
             </div>
         </div>
     </div>
@@ -180,7 +179,7 @@ export default defineComponent({
         };
         const formatNumber = (value) => {
             if (value !== undefined && value !== null) {
-                return value.toLocaleString();
+                return new Intl.NumberFormat('vi-VN').format(value);
             } else {
                 return '';
             }

@@ -38,7 +38,9 @@ class User extends Authenticatable implements JWTSubject
         'user_status',
         'user_assigned',
         'company_id',
-        'company_select'
+        'company_select',
+        'logined',
+        'lock_status',
     ];
     public $timestamps = false;
 

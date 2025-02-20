@@ -50,7 +50,7 @@
                         <td>{{ index + 1 }}</td>
                         <td>{{ orderPx.output_code }}</td>
                         <td>{{ customer.find(x=>x.ID==orderPx.customer_id)?.customer_name }}</td>
-                        <td v-if="orderPx.total_price">{{orderPx.total_price.toLocaleString()}}</td>
+                        <td v-if="orderPx.total_price">{{orderPx.total_price}}</td>
                         <td v-else>0</td>
                         <td>{{ orderPx.created }}</td>
                         <td v-if="orderPx.order_status ==1">Hoàn thành</td>

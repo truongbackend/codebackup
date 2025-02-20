@@ -10,7 +10,7 @@ import CKEditor from '@ckeditor/ckeditor5-vue';
 import PrimeVue from 'primevue/config';
 import MultiSelect from 'primevue/multiselect';
 import 'primevue/resources/themes/aura-light-green/theme.css';
-import "primevue/resources/primevue.min.css"; /* Deprecated */
+import "primevue/resources/primevue.min.css"; 
 import "primeicons/primeicons.css";
 import { TreeViewPlugin } from '@syncfusion/ej2-vue-navigations';
 import '@syncfusion/ej2-base/styles/material.css';

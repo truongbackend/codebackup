@@ -1319,7 +1319,7 @@ export default {
         };
         const formatNumber = (value) => {
             if (value !== undefined && value !== null) {
-                return value.toLocaleString();
+                return new Intl.NumberFormat('vi-VN').format(value);
             } else {
                 return '';
             }
